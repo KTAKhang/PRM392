@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/bg_gradient">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Card chính -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:elevation="6dp">
+
+            <!-- Icon + Tiêu đề -->
+            <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:gravity="center"
+                    android:background="@drawable/bg_icon_circle"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:src="@drawable/ic_person_add"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:tint="@android:color/white" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tạo tài khoản mới"
+                    android:textColor="#111827"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Điền thông tin bên dưới để đăng ký tài khoản"
+                    android:textColor="#6B7280"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- Form đăng ký -->
+            <EditText
+                android:id="@+id/etName"
+                android:hint="Tên người dùng"
+                android:inputType="textPersonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:hint="Địa chỉ email"
+                android:inputType="textEmailAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:background="@drawable/bg_input"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Nút đăng ký -->
+            <Button
+                android:id="@+id/btnRegister"
+                android:text="Đăng ký"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#2563EB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Chuyển sang đăng nhập -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã có tài khoản?"
+                android:textColor="#6B7280"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="12dp" />
+
+            <Button
+                android:id="@+id/btnGoToLogin"
+                android:text="Đăng nhập ngay"
+                android:textAllCaps="false"
+                android:backgroundTint="#3B82F6"
+                android:textColor="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
