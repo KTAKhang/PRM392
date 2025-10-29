@@ -80,7 +80,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id = db.insert(T_USERS, null, cv);
         return id != -1;
     }
-
     public User loginUser(String email, String password) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT " + U_ID + "," + U_USERNAME + "," + U_EMAIL +
@@ -96,6 +95,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return null;
+    }
+
+    // Lấy thông tin user theo ID
+    public User getUserById(int userId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + T_USERS + " WHERE " + U_ID + "=?",
+                new String[]{String.valueOf(userId)});
+        if (c.moveToFirst()) {
+            User u = new User();
+            u.setId(c.getInt(c.getColumnIndexOrThrow(U_ID)));
+            u.setUsername(c.getString(c.getColumnIndexOrThrow(U_USERNAME)));
+            u.setEmail(c.getString(c.getColumnIndexOrThrow(U_EMAIL)));
+            u.setPassword(c.getString(c.getColumnIndexOrThrow(U_PASSWORD)));
+            c.close();
+            return u;
+        }
+        c.close();
+        return null;
+    }
+
+    // Cập nhật thông tin user
+    public boolean updateUser(User u) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(U_USERNAME, u.getUsername());
+        cv.put(U_EMAIL, u.getEmail());
+        cv.put(U_PASSWORD, u.getPassword());
+        int rows = db.update(T_USERS, cv, U_ID + "=?", new String[]{String.valueOf(u.getId())});
+        return rows > 0;
     }
 
     public boolean isEmailExists(String email) {
