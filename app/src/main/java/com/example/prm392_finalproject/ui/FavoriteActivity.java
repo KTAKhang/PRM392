@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,22 +23,20 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity {
 
     private RecyclerView rvBooks;
     private BookAdapter adapter;
     private DatabaseHelper db;
     private int userId;
-    private List<Book> allBooks = new ArrayList<>();
-    private SearchView searchView;
-    private MaterialToolbar topAppBar;
-    private BottomNavigationView bottomNav;
+    private List<Book> allFavoriteBooks = new ArrayList<>();
+    private TextView tvEmpty;
     private String currentQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_list);
+        setContentView(R.layout.activity_favorite);
 
         db = new DatabaseHelper(this);
         SharedPreferences prefs = getSharedPreferences("MyLibrary", MODE_PRIVATE);
@@ -48,32 +48,35 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         rvBooks = findViewById(R.id.rvBooks);
-        topAppBar = findViewById(R.id.topAppBar);
-        searchView = findViewById(R.id.searchView);
-        bottomNav = findViewById(R.id.bottomNav);
+        MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
+        SearchView searchView = findViewById(R.id.searchView);
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        tvEmpty = findViewById(R.id.tvEmpty);
 
         rvBooks.setLayoutManager(new GridLayoutManager(this, 2));
-        adapter = new BookAdapter(this, new ArrayList<>(), (book, position) -> toggleFavorite(book, position));
+        adapter = new BookAdapter(this, new ArrayList<>(), (book, position) -> toggleFavorite(book));
         rvBooks.setAdapter(adapter);
 
+        topAppBar.setNavigationOnClickListener(v -> finish());
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.btnAdd) {
                 startActivity(new Intent(this, AddBookActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.btnFavorite) {
-                startActivity(new Intent(this, FavoriteActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.btnList) {
-                Toast.makeText(this, "Xem danh sách sách", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, HomeActivity.class));
                 return true;
             }
             return false;
         });
 
-        bottomNav.setSelectedItemId(R.id.nav_books);
+        bottomNav.setSelectedItemId(R.id.nav_favorite);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_books) {
+                startActivity(new Intent(this, HomeActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.nav_search) {
                 Toast.makeText(this, "Chức năng tìm kiếm", Toast.LENGTH_SHORT).show();
@@ -82,13 +85,11 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, AddBookActivity.class));
                 return true;
             } else if (itemId == R.id.nav_favorite) {
-                startActivity(new Intent(this, FavoriteActivity.class));
                 return true;
             } else if (itemId == R.id.nav_user) {
                 startActivity(new Intent(this, ProfileActivity.class));
                 return true;
             }
-
             return false;
         });
 
@@ -111,41 +112,59 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadBooks();
+        loadFavoriteBooks();
     }
 
-    private void loadBooks() {
-        allBooks = db.getBooksByUser(userId);
+    private void loadFavoriteBooks() {
+        allFavoriteBooks = db.getFavoriteBooksByUser(userId);
         applyFilter(currentQuery);
     }
 
     private void applyFilter(String query) {
         currentQuery = query != null ? query : "";
+        List<Book> display;
         if (TextUtils.isEmpty(currentQuery)) {
-            adapter.updateData(allBooks);
+            display = allFavoriteBooks;
         } else {
             List<Book> filtered = new ArrayList<>();
-            for (Book b : allBooks) {
+            for (Book b : allFavoriteBooks) {
                 if ((b.getTitle() != null && b.getTitle().toLowerCase().contains(currentQuery.toLowerCase()))
                         || (b.getAuthor() != null
                                 && b.getAuthor().toLowerCase().contains(currentQuery.toLowerCase()))) {
                     filtered.add(b);
                 }
             }
-            adapter.updateData(filtered);
+            display = filtered;
         }
+        adapter.updateData(display);
+        updateEmptyState(display.isEmpty());
     }
 
-    private void toggleFavorite(Book book, int position) {
+    private void toggleFavorite(Book book) {
         boolean newState = !book.isFavorite();
         boolean success = db.updateFavoriteStatus(book.getId(), newState);
         if (success) {
             book.setFavorite(newState);
-            adapter.notifyItemChanged(position);
-            Toast.makeText(this, newState ? "Đã thêm vào yêu thích" : "Đã bỏ khỏi yêu thích", Toast.LENGTH_SHORT)
-                    .show();
+            if (!newState) {
+                allFavoriteBooks.remove(book);
+                applyFilter(currentQuery);
+                Toast.makeText(this, "Đã bỏ khỏi yêu thích", Toast.LENGTH_SHORT).show();
+            } else {
+                applyFilter(currentQuery);
+                Toast.makeText(this, "Đã thêm vào yêu thích", Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, "Không thể cập nhật yêu thích", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateEmptyState(boolean isEmpty) {
+        if (isEmpty) {
+            tvEmpty.setVisibility(View.VISIBLE);
+            rvBooks.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+            rvBooks.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.prm392_finalproject">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.prm392_finalproject">
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.PRM392_finalProject">
+    <application android:allowBackup="true" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:roundIcon="@mipmap/ic_launcher_round" android:supportsRtl="true" android:theme="@style/Theme.PRM392_finalProject">
 
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="true">
+        <activity android:name=".ui.LoginActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -26,6 +17,7 @@
         <activity android:name=".ui.BookDetailActivity" android:exported="false" />
         <activity android:name=".ui.ProfileActivity" android:exported="false" />
         <activity android:name=".ui.EditProfileActivity" android:exported="false" />
+        <activity android:name=".ui.FavoriteActivity" android:exported="false" />
 
     </application>
 
