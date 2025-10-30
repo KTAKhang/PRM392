@@ -80,10 +80,12 @@ public class HomeActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_stats) {
                 Toast.makeText(this, "Thống kê đang phát triển", Toast.LENGTH_SHORT).show();
                 return true;
+                //thêm profile
             } else if (itemId == R.id.nav_user) {
-                Toast.makeText(this, "Trang cá nhân", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfileActivity.class));
                 return true;
             }
+
             return false;
         });
 
