@@ -40,25 +40,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createUsers =
-                "CREATE TABLE " + T_USERS + " (" +
-                        U_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        U_USERNAME + " TEXT NOT NULL," +
-                        U_EMAIL + " TEXT UNIQUE NOT NULL," +
-                        U_PASSWORD + " TEXT NOT NULL" +
-                        ")";
-        String createBooks =
-                "CREATE TABLE " + T_BOOKS + " (" +
-                        B_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        B_TITLE + " TEXT NOT NULL," +
-                        B_AUTHOR + " TEXT," +
-                        B_YEAR + " INTEGER," +
-                        B_NOTES + " TEXT," +
-                        B_FAVORITE + " INTEGER DEFAULT 0," +
-                        B_IMAGE + " TEXT," +
-                        B_USER_ID + " INTEGER," +
-                        "FOREIGN KEY(" + B_USER_ID + ") REFERENCES " + T_USERS + "(" + U_ID + ")" +
-                        ")";
+        String createUsers = "CREATE TABLE " + T_USERS + " (" +
+                U_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                U_USERNAME + " TEXT NOT NULL," +
+                U_EMAIL + " TEXT UNIQUE NOT NULL," +
+                U_PASSWORD + " TEXT NOT NULL" +
+                ")";
+        String createBooks = "CREATE TABLE " + T_BOOKS + " (" +
+                B_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                B_TITLE + " TEXT NOT NULL," +
+                B_AUTHOR + " TEXT," +
+                B_YEAR + " INTEGER," +
+                B_NOTES + " TEXT," +
+                B_FAVORITE + " INTEGER DEFAULT 0," +
+                B_IMAGE + " TEXT," +
+                B_USER_ID + " INTEGER," +
+                "FOREIGN KEY(" + B_USER_ID + ") REFERENCES " + T_USERS + "(" + U_ID + ")" +
+                ")";
         db.execSQL(createUsers);
         db.execSQL(createBooks);
     }
@@ -80,11 +78,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id = db.insert(T_USERS, null, cv);
         return id != -1;
     }
+
     public User loginUser(String email, String password) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT " + U_ID + "," + U_USERNAME + "," + U_EMAIL +
-                        " FROM " + T_USERS + " WHERE " + U_EMAIL + "=? AND " + U_PASSWORD + "=?",
-                new String[]{email, password});
+                " FROM " + T_USERS + " WHERE " + U_EMAIL + "=? AND " + U_PASSWORD + "=?",
+                new String[] { email, password });
         if (c.moveToFirst()) {
             User u = new User();
             u.setId(c.getInt(0));
@@ -101,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public User getUserById(int userId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM " + T_USERS + " WHERE " + U_ID + "=?",
-                new String[]{String.valueOf(userId)});
+                new String[] { String.valueOf(userId) });
         if (c.moveToFirst()) {
             User u = new User();
             u.setId(c.getInt(c.getColumnIndexOrThrow(U_ID)));
@@ -122,13 +121,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(U_USERNAME, u.getUsername());
         cv.put(U_EMAIL, u.getEmail());
         cv.put(U_PASSWORD, u.getPassword());
-        int rows = db.update(T_USERS, cv, U_ID + "=?", new String[]{String.valueOf(u.getId())});
+        int rows = db.update(T_USERS, cv, U_ID + "=?", new String[] { String.valueOf(u.getId()) });
         return rows > 0;
     }
 
     public boolean isEmailExists(String email) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT " + U_ID + " FROM " + T_USERS + " WHERE " + U_EMAIL + "=?", new String[]{email});
+        Cursor c = db.rawQuery("SELECT " + U_ID + " FROM " + T_USERS + " WHERE " + U_EMAIL + "=?",
+                new String[] { email });
         boolean exists = c.moveToFirst();
         c.close();
         return exists;
@@ -157,19 +157,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(B_NOTES, b.getNotes());
         cv.put(B_FAVORITE, b.isFavorite() ? 1 : 0);
         cv.put(B_IMAGE, b.getImageUri());
-        int rows = db.update(T_BOOKS, cv, B_ID + "=?", new String[]{String.valueOf(b.getId())});
+        int rows = db.update(T_BOOKS, cv, B_ID + "=?", new String[] { String.valueOf(b.getId()) });
         return rows > 0;
     }
 
     public boolean deleteBook(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        int rows = db.delete(T_BOOKS, B_ID + "=?", new String[]{String.valueOf(id)});
+        int rows = db.delete(T_BOOKS, B_ID + "=?", new String[] { String.valueOf(id) });
         return rows > 0;
     }
 
     public Book getBookById(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_ID + "=?", new String[]{String.valueOf(id)});
+        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_ID + "=?",
+                new String[] { String.valueOf(id) });
         if (c.moveToFirst()) {
             Book b = new Book();
             b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
@@ -189,7 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Book> getBooksByUser(int userId) {
         List<Book> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_USER_ID + "=?", new String[]{String.valueOf(userId)});
+        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_USER_ID + "=?",
+                new String[] { String.valueOf(userId) });
         while (c.moveToNext()) {
             Book b = new Book();
             b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
@@ -204,5 +206,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return list;
+    }
+
+    // Lấy danh sách sách yêu thích của user
+    public List<Book> getFavoriteBooksByUser(int userId) {
+        List<Book> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_USER_ID + "=? AND " + B_FAVORITE + "=1",
+                new String[] { String.valueOf(userId) });
+        while (c.moveToNext()) {
+            Book b = new Book();
+            b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
+            b.setTitle(c.getString(c.getColumnIndexOrThrow(B_TITLE)));
+            b.setAuthor(c.getString(c.getColumnIndexOrThrow(B_AUTHOR)));
+            b.setYear(c.getInt(c.getColumnIndexOrThrow(B_YEAR)));
+            b.setNotes(c.getString(c.getColumnIndexOrThrow(B_NOTES)));
+            b.setFavorite(c.getInt(c.getColumnIndexOrThrow(B_FAVORITE)) == 1);
+            b.setImageUri(c.getString(c.getColumnIndexOrThrow(B_IMAGE)));
+            b.setUserId(c.getInt(c.getColumnIndexOrThrow(B_USER_ID)));
+            list.add(b);
+        }
+        c.close();
+        return list;
+    }
+
+    public boolean updateFavoriteStatus(int bookId, boolean isFavorite) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(B_FAVORITE, isFavorite ? 1 : 0);
+        int rows = db.update(T_BOOKS, cv, B_ID + "=?", new String[] { String.valueOf(bookId) });
+        return rows > 0;
     }
 }
