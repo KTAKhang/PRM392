@@ -3,18 +3,16 @@ package com.example.prm392_finalproject.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prm392_finalproject.R;
-import com.example.prm392_finalproject.adapter.BookAdapter;
+import com.example.prm392_finalproject.adapter.RestaurantAdapter;
 import com.example.prm392_finalproject.database.DatabaseHelper;
-import com.example.prm392_finalproject.model.Book;
+import com.example.prm392_finalproject.model.Restaurant;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -23,23 +21,21 @@ import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private RecyclerView rvBooks;
-    private BookAdapter adapter;
+    private RecyclerView rvRestaurants;
+    private RestaurantAdapter adapter;
     private DatabaseHelper db;
     private int userId;
-    private List<Book> allBooks = new ArrayList<>();
-    private SearchView searchView;
+    private List<Restaurant> allRestaurants = new ArrayList<>();
     private MaterialToolbar topAppBar;
     private BottomNavigationView bottomNav;
-    private String currentQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_list);
+        setContentView(R.layout.activity_restaurant_list);
 
         db = new DatabaseHelper(this);
-        SharedPreferences prefs = getSharedPreferences("MyLibrary", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("FoodSpots", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
         if (userId == -1) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -47,39 +43,38 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-        rvBooks = findViewById(R.id.rvBooks);
+        rvRestaurants = findViewById(R.id.rvRestaurants);
         topAppBar = findViewById(R.id.topAppBar);
-        searchView = findViewById(R.id.searchView);
         bottomNav = findViewById(R.id.bottomNav);
 
-        rvBooks.setLayoutManager(new GridLayoutManager(this, 2));
-        adapter = new BookAdapter(this, new ArrayList<>(), (book, position) -> toggleFavorite(book, position));
-        rvBooks.setAdapter(adapter);
+        rvRestaurants.setLayoutManager(new GridLayoutManager(this, 2));
+        adapter = new RestaurantAdapter(this, new ArrayList<>(), (restaurant, position) -> toggleFavorite(restaurant, position));
+        rvRestaurants.setAdapter(adapter);
 
         topAppBar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.btnAdd) {
-                startActivity(new Intent(this, AddBookActivity.class));
+                startActivity(new Intent(this, AddRestaurantActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.btnFavorite) {
                 startActivity(new Intent(this, FavoriteActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.btnList) {
-                Toast.makeText(this, "Xem danh sách sách", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Danh sách quán ăn", Toast.LENGTH_SHORT).show();
                 return true;
             }
             return false;
         });
 
-        bottomNav.setSelectedItemId(R.id.nav_books);
+        bottomNav.setSelectedItemId(R.id.nav_restaurants);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_books) {
+            if (itemId == R.id.nav_restaurants) {
                 return true;
             } else if (itemId == R.id.nav_search) {
-                Toast.makeText(this, "Chức năng tìm kiếm", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, SearchActivity.class));
                 return true;
             } else if (itemId == R.id.nav_add) {
-                startActivity(new Intent(this, AddBookActivity.class));
+                startActivity(new Intent(this, AddRestaurantActivity.class));
                 return true;
             } else if (itemId == R.id.nav_favorite) {
                 startActivity(new Intent(this, FavoriteActivity.class));
@@ -91,56 +86,24 @@ public class HomeActivity extends AppCompatActivity {
 
             return false;
         });
-
-        if (searchView != null) {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    applyFilter(newText);
-                    return true;
-                }
-            });
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadBooks();
+        loadRestaurants();
     }
 
-    private void loadBooks() {
-        allBooks = db.getBooksByUser(userId);
-        applyFilter(currentQuery);
+    private void loadRestaurants() {
+        allRestaurants = db.getRestaurantsByUser(userId);
+        adapter.updateData(allRestaurants);
     }
 
-    private void applyFilter(String query) {
-        currentQuery = query != null ? query : "";
-        if (TextUtils.isEmpty(currentQuery)) {
-            adapter.updateData(allBooks);
-        } else {
-            List<Book> filtered = new ArrayList<>();
-            for (Book b : allBooks) {
-                if ((b.getTitle() != null && b.getTitle().toLowerCase().contains(currentQuery.toLowerCase()))
-                        || (b.getAuthor() != null
-                                && b.getAuthor().toLowerCase().contains(currentQuery.toLowerCase()))) {
-                    filtered.add(b);
-                }
-            }
-            adapter.updateData(filtered);
-        }
-    }
-
-    private void toggleFavorite(Book book, int position) {
-        boolean newState = !book.isFavorite();
-        boolean success = db.updateFavoriteStatus(book.getId(), newState);
+    private void toggleFavorite(Restaurant restaurant, int position) {
+        boolean newState = !restaurant.isFavorite();
+        boolean success = db.updateFavoriteStatus(restaurant.getId(), newState);
         if (success) {
-            book.setFavorite(newState);
+            restaurant.setFavorite(newState);
             adapter.notifyItemChanged(position);
             Toast.makeText(this, newState ? "Đã thêm vào yêu thích" : "Đã bỏ khỏi yêu thích", Toast.LENGTH_SHORT)
                     .show();

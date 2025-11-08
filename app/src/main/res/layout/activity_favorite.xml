@@ -1,119 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
-    android:paddingLeft="20dp"
-    android:paddingTop="16dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="0dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_gradient" android:paddingLeft="20dp" android:paddingTop="16dp" android:paddingRight="20dp" android:paddingBottom="0dp">
 
     <!-- Thanh top: Tiêu đề + menu -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
-        app:title="Sách yêu thích"
-        app:titleCentered="true"
-        app:titleTextColor="@color/black"
-        app:navigationIcon="?attr/homeAsUpIndicator"
-        app:navigationIconTint="@color/black"
-        app:menu="@menu/topbar_menu" />
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/topAppBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" android:elevation="0dp" app:title="Quán ăn yêu thích" app:titleCentered="true" app:titleTextColor="@color/black" app:navigationIcon="?attr/homeAsUpIndicator" app:navigationIconTint="@color/black" app:menu="@menu/topbar_menu" />
 
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Những cuốn sách bạn yêu thích nhất"
-        android:textColor="#4B5563"
-        android:textSize="14sp" />
-
-    <!-- Ô tìm kiếm -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true">
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:queryHint="Tìm trong sách yêu thích"
-            android:iconifiedByDefault="false"
-            android:background="@android:color/transparent"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
-
-    </com.google.android.material.card.MaterialCardView>
+    <TextView android:id="@+id/tvSubtitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Những quán ăn bạn yêu thích nhất" android:textColor="#4B5563" android:textSize="14sp" />
 
     <!-- Nội dung chính: danh sách hoặc trạng thái trống -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        app:cardUseCompatPadding="true"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="@android:color/white">
+    <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="24dp" android:layout_marginBottom="16dp" android:layout_weight="1" android:clipToPadding="false" app:cardUseCompatPadding="true" app:cardCornerRadius="24dp" app:cardElevation="4dp" app:cardBackgroundColor="@android:color/white">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvBooks"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="12dp"
-                android:clipToPadding="false"
-                android:scrollbars="vertical" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvRestaurants" android:layout_width="match_parent" android:layout_height="match_parent" android:padding="12dp" android:clipToPadding="false" android:scrollbars="vertical" />
 
-            <TextView
-                android:id="@+id/tvEmpty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Chưa có sách yêu thích nào"
-                android:textColor="#6B7280"
-                android:textSize="16sp"
-                android:visibility="gone" />
+            <TextView android:id="@+id/tvEmpty" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="Chưa có quán ăn yêu thích nào" android:textColor="#6B7280" android:textSize="16sp" android:visibility="gone" />
 
         </FrameLayout>
 
     </androidx.cardview.widget.CardView>
 
     <!-- Thanh điều hướng dưới -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="24dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardElevation="6dp">
+    <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" app:cardCornerRadius="24dp" app:cardBackgroundColor="@android:color/white" app:cardElevation="6dp">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:itemIconTint="@color/nav_icon_selector"
-            app:itemTextColor="@color/nav_text_selector"
-            app:itemRippleColor="@color/purple_200"
-            app:menu="@menu/bottom_nav_menu" />
+        <com.google.android.material.bottomnavigation.BottomNavigationView android:id="@+id/bottomNav" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@android:color/transparent" app:itemIconTint="@color/nav_icon_selector" app:itemTextColor="@color/nav_text_selector" app:itemRippleColor="@color/purple_200" app:menu="@menu/bottom_nav_menu" />
 
     </com.google.android.material.card.MaterialCardView>
 

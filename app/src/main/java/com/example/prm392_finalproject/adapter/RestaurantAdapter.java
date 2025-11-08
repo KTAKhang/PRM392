@@ -2,6 +2,7 @@ package com.example.prm392_finalproject.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,50 +13,54 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.prm392_finalproject.R;
-import com.example.prm392_finalproject.model.Book;
-import com.example.prm392_finalproject.ui.BookDetailActivity;
+import com.example.prm392_finalproject.model.Restaurant;
+import com.example.prm392_finalproject.ui.RestaurantDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookAdapter extends RecyclerView.Adapter<BookAdapter.VH> {
+public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.VH> {
 
     public interface OnFavoriteClickListener {
-        void onFavoriteClick(Book book, int position);
+        void onFavoriteClick(Restaurant restaurant, int position);
     }
 
-    private Context ctx;
-    private List<Book> list;
-    private OnFavoriteClickListener favoriteClickListener;
+    private final Context ctx;
+    private List<Restaurant> list;
+    private final OnFavoriteClickListener favoriteClickListener;
 
-    public BookAdapter(Context ctx, List<Book> list, OnFavoriteClickListener favoriteClickListener) {
+    public RestaurantAdapter(Context ctx, List<Restaurant> list, OnFavoriteClickListener favoriteClickListener) {
         this.ctx = ctx;
         this.list = list != null ? list : new ArrayList<>();
         this.favoriteClickListener = favoriteClickListener;
     }
 
-    public void updateData(List<Book> newList) {
+    public void updateData(List<Restaurant> newList) {
         this.list = newList != null ? newList : new ArrayList<>();
         notifyDataSetChanged();
     }
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(ctx).inflate(R.layout.item_book, parent, false);
+        View v = LayoutInflater.from(ctx).inflate(R.layout.item_restaurant, parent, false);
         return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        Book b = list.get(position);
-        holder.tvTitle.setText(b.getTitle());
-        holder.tvAuthor.setText(b.getAuthor() == null || b.getAuthor().isEmpty() ? "-" : b.getAuthor());
+        Restaurant restaurant = list.get(position);
+        holder.tvName.setText(restaurant.getName());
+        holder.tvAddress.setText(
+                restaurant.getAddress() == null || restaurant.getAddress().isEmpty() ? "-" : restaurant.getAddress());
         holder.ivFav.setImageResource(
-                b.isFavorite() ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
+                restaurant.isFavorite() ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
 
-        if (b.getImageUri() != null && !b.getImageUri().isEmpty()) {
+        if (restaurant.getImageUri() != null && !restaurant.getImageUri().isEmpty()) {
+            String imageUri = restaurant.getImageUri();
+            Uri parsed = Uri.parse(imageUri);
+            Object source = parsed.getScheme() != null ? parsed : imageUri;
             Glide.with(ctx)
-                    .load(b.getImageUri())
+                    .load(source)
                     .placeholder(R.drawable.sample_image)
                     .error(R.drawable.sample_image)
                     .into(holder.ivImage);
@@ -64,15 +69,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.VH> {
         }
 
         holder.itemView.setOnClickListener(v -> {
-            Intent i = new Intent(ctx, BookDetailActivity.class);
-            i.putExtra("book_id", b.getId());
+            Intent i = new Intent(ctx, RestaurantDetailActivity.class);
+            i.putExtra("restaurant_id", restaurant.getId());
             ctx.startActivity(i);
         });
 
         holder.ivFav.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
-            if (adapterPosition == RecyclerView.NO_POSITION)
+            if (adapterPosition == RecyclerView.NO_POSITION) {
                 return;
+            }
             if (favoriteClickListener != null) {
                 favoriteClickListener.onFavoriteClick(list.get(adapterPosition), adapterPosition);
             }
@@ -85,15 +91,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.VH> {
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvAuthor;
+        TextView tvName, tvAddress;
         ImageView ivFav, ivImage;
 
         VH(View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvAuthor = itemView.findViewById(R.id.tvAuthor);
+            tvName = itemView.findViewById(R.id.tvName);
+            tvAddress = itemView.findViewById(R.id.tvAddress);
             ivFav = itemView.findViewById(R.id.ivFav);
             ivImage = itemView.findViewById(R.id.ivImage);
         }
     }
 }
+

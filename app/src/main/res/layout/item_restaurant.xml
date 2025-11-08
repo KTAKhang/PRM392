@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_margin="6dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="6dp"
     android:padding="12dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <!-- Hình ảnh -->
         <ImageView
             android:id="@+id/ivImage"
             android:layout_width="match_parent"
@@ -18,30 +17,28 @@
             android:scaleType="centerCrop"
             android:src="@drawable/sample_image" />
 
-        <!-- Tiêu đề -->
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:text="Tên quán ăn"
             android:textSize="16sp"
-            android:text="Book Title" />
+            android:textStyle="bold" />
 
-        <!-- Tác giả -->
         <TextView
-            android:id="@+id/tvAuthor"
+            android:id="@+id/tvAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Author Name" />
+            android:text="Địa chỉ" />
 
-        <!-- Icon yêu thích -->
         <ImageView
             android:id="@+id/ivFav"
-            android:layout_gravity="end"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_gravity="end"
             android:layout_marginTop="4dp"
             android:src="@android:drawable/btn_star_big_off" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
+

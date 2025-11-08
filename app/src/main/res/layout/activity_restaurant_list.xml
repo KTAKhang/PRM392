@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@drawable/bg_gradient"
     android:paddingLeft="20dp"
     android:paddingTop="16dp"
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:elevation="0dp"
-        app:title="Thư viện sách"
+        app:title="Danh sách quán ăn"
         app:titleCentered="true"
         app:titleTextColor="@color/black"
         app:navigationIconTint="@color/black"
@@ -27,51 +27,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Khám phá bộ sưu tập sách của bạn"
+        android:text="Khám phá những địa điểm ăn uống yêu thích"
         android:textColor="#4B5563"
         android:textSize="14sp" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardUseCompatPadding="true">
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:queryHint="Tìm kiếm theo tiêu đề hoặc tác giả"
-            android:iconifiedByDefault="false"
-            android:background="@android:color/transparent"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
-
-    </com.google.android.material.card.MaterialCardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="24dp"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="@android:color/white">
+        app:cardUseCompatPadding="true">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvBooks"
+            android:id="@+id/rvRestaurants"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
             android:clipToPadding="false"
+            android:padding="12dp"
             android:scrollbars="vertical" />
 
     </androidx.cardview.widget.CardView>
@@ -80,8 +57,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:cardCornerRadius="24dp"
         app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="24dp"
         app:cardElevation="6dp">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -90,10 +67,11 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:itemIconTint="@color/nav_icon_selector"
-            app:itemTextColor="@color/nav_text_selector"
             app:itemRippleColor="@color/purple_200"
+            app:itemTextColor="@color/nav_text_selector"
             app:menu="@menu/bottom_nav_menu" />
 
     </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
+

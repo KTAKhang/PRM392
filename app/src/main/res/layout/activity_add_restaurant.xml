@@ -5,9 +5,9 @@
     android:padding="16dp">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/imgPreview"
@@ -19,52 +19,53 @@
 
         <Button
             android:id="@+id/btnPickImage"
-            android:text="Chọn ảnh"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:text="Chọn ảnh" />
 
         <EditText
-            android:id="@+id/etTitle"
-            android:hint="Tên sách"
+            android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginTop="12dp"
+            android:hint="Tên quán ăn" />
 
         <EditText
-            android:id="@+id/etAuthor"
-            android:hint="Tác giả"
+            android:id="@+id/etAddress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:hint="Địa chỉ" />
 
         <EditText
-            android:id="@+id/etYear"
-            android:hint="Năm xuất bản"
-            android:inputType="number"
+            android:id="@+id/etPhone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại"
+            android:inputType="phone" />
 
         <EditText
             android:id="@+id/etNotes"
-            android:hint="Ghi chú"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minLines="3"
-            android:gravity="top"/>
+            android:gravity="top"
+            android:hint="Ghi chú"
+            android:minLines="3" />
 
         <Switch
             android:id="@+id/swFav"
-            android:text="Yêu thích"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Yêu thích" />
 
         <Button
             android:id="@+id/btnSave"
-            android:text="Lưu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:text="Lưu" />
 
     </LinearLayout>
 </ScrollView>
+

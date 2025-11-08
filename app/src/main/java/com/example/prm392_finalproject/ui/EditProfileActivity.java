@@ -26,7 +26,7 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         db = new DatabaseHelper(this);
-        prefs = getSharedPreferences("MyLibrary", MODE_PRIVATE);
+        prefs = getSharedPreferences("FoodSpots", MODE_PRIVATE);
         userId = prefs.getInt("user_id", -1);
         if (userId == -1) {
             Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show();

@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.prm392_finalproject.model.Book;
+import com.example.prm392_finalproject.model.Restaurant;
 import com.example.prm392_finalproject.model.User;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "mylibrary.db";
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
 
     // users
     public static final String T_USERS = "users";
@@ -23,16 +23,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String U_EMAIL = "email";
     public static final String U_PASSWORD = "password";
 
-    // books
-    public static final String T_BOOKS = "books";
-    public static final String B_ID = "id";
-    public static final String B_TITLE = "title";
-    public static final String B_AUTHOR = "author";
-    public static final String B_YEAR = "year";
-    public static final String B_NOTES = "notes";
-    public static final String B_FAVORITE = "favorite";
-    public static final String B_USER_ID = "user_id";
-    public static final String B_IMAGE = "image_uri";
+    // restaurants
+    public static final String T_RESTAURANTS = "restaurants";
+    public static final String R_ID = "id";
+    public static final String R_NAME = "name";
+    public static final String R_ADDRESS = "address";
+    public static final String R_PHONE = "phone";
+    public static final String R_NOTES = "notes";
+    public static final String R_FAVORITE = "favorite";
+    public static final String R_USER_ID = "user_id";
+    public static final String R_IMAGE = "image_uri";
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -46,24 +46,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 U_EMAIL + " TEXT UNIQUE NOT NULL," +
                 U_PASSWORD + " TEXT NOT NULL" +
                 ")";
-        String createBooks = "CREATE TABLE " + T_BOOKS + " (" +
-                B_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                B_TITLE + " TEXT NOT NULL," +
-                B_AUTHOR + " TEXT," +
-                B_YEAR + " INTEGER," +
-                B_NOTES + " TEXT," +
-                B_FAVORITE + " INTEGER DEFAULT 0," +
-                B_IMAGE + " TEXT," +
-                B_USER_ID + " INTEGER," +
-                "FOREIGN KEY(" + B_USER_ID + ") REFERENCES " + T_USERS + "(" + U_ID + ")" +
+        String createRestaurants = "CREATE TABLE " + T_RESTAURANTS + " (" +
+                R_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                R_NAME + " TEXT NOT NULL," +
+                R_ADDRESS + " TEXT," +
+                R_PHONE + " TEXT," +
+                R_NOTES + " TEXT," +
+                R_FAVORITE + " INTEGER DEFAULT 0," +
+                R_IMAGE + " TEXT," +
+                R_USER_ID + " INTEGER," +
+                "FOREIGN KEY(" + R_USER_ID + ") REFERENCES " + T_USERS + "(" + U_ID + ")" +
                 ")";
         db.execSQL(createUsers);
-        db.execSQL(createBooks);
+        db.execSQL(createRestaurants);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        db.execSQL("DROP TABLE IF EXISTS " + T_BOOKS);
+        db.execSQL("DROP TABLE IF EXISTS " + T_RESTAURANTS);
+        db.execSQL("DROP TABLE IF EXISTS books");
         db.execSQL("DROP TABLE IF EXISTS " + T_USERS);
         onCreate(db);
     }
@@ -134,107 +135,159 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    // ---------- Book methods ----------
-    public long insertBook(Book b) {
+    // ---------- Restaurant methods ----------
+    public long insertRestaurant(Restaurant restaurant) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(B_TITLE, b.getTitle());
-        cv.put(B_AUTHOR, b.getAuthor());
-        cv.put(B_YEAR, b.getYear());
-        cv.put(B_NOTES, b.getNotes());
-        cv.put(B_FAVORITE, b.isFavorite() ? 1 : 0);
-        cv.put(B_IMAGE, b.getImageUri());
-        cv.put(B_USER_ID, b.getUserId());
-        return db.insert(T_BOOKS, null, cv);
+        cv.put(R_NAME, restaurant.getName());
+        cv.put(R_ADDRESS, restaurant.getAddress());
+        cv.put(R_PHONE, restaurant.getPhone());
+        cv.put(R_NOTES, restaurant.getNotes());
+        cv.put(R_FAVORITE, restaurant.isFavorite() ? 1 : 0);
+        cv.put(R_IMAGE, restaurant.getImageUri());
+        cv.put(R_USER_ID, restaurant.getUserId());
+        return db.insert(T_RESTAURANTS, null, cv);
     }
 
-    public boolean updateBook(Book b) {
+    public boolean updateRestaurant(Restaurant restaurant) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(B_TITLE, b.getTitle());
-        cv.put(B_AUTHOR, b.getAuthor());
-        cv.put(B_YEAR, b.getYear());
-        cv.put(B_NOTES, b.getNotes());
-        cv.put(B_FAVORITE, b.isFavorite() ? 1 : 0);
-        cv.put(B_IMAGE, b.getImageUri());
-        int rows = db.update(T_BOOKS, cv, B_ID + "=?", new String[] { String.valueOf(b.getId()) });
+        cv.put(R_NAME, restaurant.getName());
+        cv.put(R_ADDRESS, restaurant.getAddress());
+        cv.put(R_PHONE, restaurant.getPhone());
+        cv.put(R_NOTES, restaurant.getNotes());
+        cv.put(R_FAVORITE, restaurant.isFavorite() ? 1 : 0);
+        cv.put(R_IMAGE, restaurant.getImageUri());
+        int rows = db.update(T_RESTAURANTS, cv, R_ID + "=?", new String[] { String.valueOf(restaurant.getId()) });
         return rows > 0;
     }
 
-    public boolean deleteBook(int id) {
+    public boolean deleteRestaurant(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        int rows = db.delete(T_BOOKS, B_ID + "=?", new String[] { String.valueOf(id) });
+        int rows = db.delete(T_RESTAURANTS, R_ID + "=?", new String[] { String.valueOf(id) });
         return rows > 0;
     }
 
-    public Book getBookById(int id) {
+    public Restaurant getRestaurantById(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_ID + "=?",
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_ID + "=?",
                 new String[] { String.valueOf(id) });
         if (c.moveToFirst()) {
-            Book b = new Book();
-            b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
-            b.setTitle(c.getString(c.getColumnIndexOrThrow(B_TITLE)));
-            b.setAuthor(c.getString(c.getColumnIndexOrThrow(B_AUTHOR)));
-            b.setYear(c.getInt(c.getColumnIndexOrThrow(B_YEAR)));
-            b.setNotes(c.getString(c.getColumnIndexOrThrow(B_NOTES)));
-            b.setFavorite(c.getInt(c.getColumnIndexOrThrow(B_FAVORITE)) == 1);
-            b.setUserId(c.getInt(c.getColumnIndexOrThrow(B_USER_ID)));
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
             c.close();
-            return b;
+            return restaurant;
         }
         c.close();
         return null;
     }
 
-    public List<Book> getBooksByUser(int userId) {
-        List<Book> list = new ArrayList<>();
+    public List<Restaurant> getRestaurantsByUser(int userId) {
+        List<Restaurant> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_USER_ID + "=?",
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=?",
                 new String[] { String.valueOf(userId) });
         while (c.moveToNext()) {
-            Book b = new Book();
-            b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
-            b.setTitle(c.getString(c.getColumnIndexOrThrow(B_TITLE)));
-            b.setAuthor(c.getString(c.getColumnIndexOrThrow(B_AUTHOR)));
-            b.setYear(c.getInt(c.getColumnIndexOrThrow(B_YEAR)));
-            b.setNotes(c.getString(c.getColumnIndexOrThrow(B_NOTES)));
-            b.setFavorite(c.getInt(c.getColumnIndexOrThrow(B_FAVORITE)) == 1);
-            b.setImageUri(c.getString(c.getColumnIndexOrThrow(B_IMAGE)));
-            b.setUserId(c.getInt(c.getColumnIndexOrThrow(B_USER_ID)));
-            list.add(b);
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
         }
         c.close();
         return list;
     }
 
-    // Lấy danh sách sách yêu thích của user
-    public List<Book> getFavoriteBooksByUser(int userId) {
-        List<Book> list = new ArrayList<>();
+    // Lấy danh sách quán ăn yêu thích của user
+    public List<Restaurant> getFavoriteRestaurantsByUser(int userId) {
+        List<Restaurant> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + T_BOOKS + " WHERE " + B_USER_ID + "=? AND " + B_FAVORITE + "=1",
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND " + R_FAVORITE + "=1",
                 new String[] { String.valueOf(userId) });
         while (c.moveToNext()) {
-            Book b = new Book();
-            b.setId(c.getInt(c.getColumnIndexOrThrow(B_ID)));
-            b.setTitle(c.getString(c.getColumnIndexOrThrow(B_TITLE)));
-            b.setAuthor(c.getString(c.getColumnIndexOrThrow(B_AUTHOR)));
-            b.setYear(c.getInt(c.getColumnIndexOrThrow(B_YEAR)));
-            b.setNotes(c.getString(c.getColumnIndexOrThrow(B_NOTES)));
-            b.setFavorite(c.getInt(c.getColumnIndexOrThrow(B_FAVORITE)) == 1);
-            b.setImageUri(c.getString(c.getColumnIndexOrThrow(B_IMAGE)));
-            b.setUserId(c.getInt(c.getColumnIndexOrThrow(B_USER_ID)));
-            list.add(b);
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
         }
         c.close();
         return list;
     }
 
-    public boolean updateFavoriteStatus(int bookId, boolean isFavorite) {
+    public boolean updateFavoriteStatus(int restaurantId, boolean isFavorite) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(B_FAVORITE, isFavorite ? 1 : 0);
-        int rows = db.update(T_BOOKS, cv, B_ID + "=?", new String[] { String.valueOf(bookId) });
+        cv.put(R_FAVORITE, isFavorite ? 1 : 0);
+        int rows = db.update(T_RESTAURANTS, cv, R_ID + "=?", new String[] { String.valueOf(restaurantId) });
         return rows > 0;
+    }
+
+    public List<Restaurant> searchRestaurantsByKeyword(int userId, String keyword) {
+        List<Restaurant> list = new ArrayList<>();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return list;
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        String like = "%" + keyword.trim().toLowerCase() + "%";
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND (LOWER(" + R_NAME
+                + ") LIKE ? OR LOWER(" + R_ADDRESS + ") LIKE ? OR LOWER(" + R_NOTES + ") LIKE ?)",
+                new String[] { String.valueOf(userId), like, like, like });
+        while (c.moveToNext()) {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
+        }
+        c.close();
+        return list;
+    }
+
+    public Restaurant searchRestaurantByName(int userId, String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return null;
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        String likeQuery = "%" + keyword.trim().toLowerCase() + "%";
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND LOWER("
+                + R_NAME + ") LIKE ? LIMIT 1", new String[] { String.valueOf(userId), likeQuery });
+        if (c.moveToFirst()) {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            c.close();
+            return restaurant;
+        }
+        c.close();
+        return null;
     }
 }
