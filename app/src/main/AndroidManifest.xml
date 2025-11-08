@@ -12,9 +12,10 @@
 
         <activity android:name=".ui.RegisterActivity" android:exported="false" />
         <activity android:name=".ui.HomeActivity" android:exported="false" />
-        <activity android:name=".ui.AddBookActivity" android:exported="false" />
-        <activity android:name=".ui.EditBookActivity" android:exported="false" />
-        <activity android:name=".ui.BookDetailActivity" android:exported="false" />
+        <activity android:name=".ui.AddRestaurantActivity" android:exported="false" />
+        <activity android:name=".ui.EditRestaurantActivity" android:exported="false" />
+        <activity android:name=".ui.RestaurantDetailActivity" android:exported="false" />
+        <activity android:name=".ui.SearchActivity" android:exported="false" />
         <activity android:name=".ui.ProfileActivity" android:exported="false" />
         <activity android:name=".ui.EditProfileActivity" android:exported="false" />
         <activity android:name=".ui.FavoriteActivity" android:exported="false" />

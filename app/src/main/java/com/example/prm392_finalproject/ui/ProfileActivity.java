@@ -27,7 +27,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         db = new DatabaseHelper(this);
-        prefs = getSharedPreferences("MyLibrary", MODE_PRIVATE);
+        prefs = getSharedPreferences("FoodSpots", MODE_PRIVATE);
 
         tvName = findViewById(R.id.tvName);
         tvEmail = findViewById(R.id.tvEmail);

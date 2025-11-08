@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         db = new DatabaseHelper(this);
-        prefs = getSharedPreferences("MyLibrary", MODE_PRIVATE);
+        prefs = getSharedPreferences("FoodSpots", MODE_PRIVATE);
 
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
