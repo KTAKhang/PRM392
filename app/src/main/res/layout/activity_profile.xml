@@ -81,10 +81,13 @@
             android:text="Cập nhật thông tin"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:backgroundTint="#2563EB"
+            android:background="@drawable/bg_button_primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
 
         <!-- Nút đăng xuất -->
         <Button
@@ -92,8 +95,11 @@
             android:text="Đăng xuất"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:backgroundTint="#DC2626"
+            android:background="@drawable/bg_button_danger"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
     </LinearLayout>
 </LinearLayout>

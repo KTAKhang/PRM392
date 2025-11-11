@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -52,8 +53,29 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.VH
         holder.tvName.setText(restaurant.getName());
         holder.tvAddress.setText(
                 restaurant.getAddress() == null || restaurant.getAddress().isEmpty() ? "-" : restaurant.getAddress());
+        
+        // Update favorite button state
+        boolean isFavorite = restaurant.isFavorite();
+        holder.ivFav.setSelected(isFavorite);
         holder.ivFav.setImageResource(
-                restaurant.isFavorite() ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
+                isFavorite ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
+        
+        // Update background and ripple effect based on favorite state
+        if (isFavorite) {
+            holder.ivFav.setBackgroundResource(R.drawable.bg_fav_button_active_ripple);
+            holder.ivFav.setColorFilter(ContextCompat.getColor(ctx, android.R.color.white));
+            // Animate scale for visual feedback
+            holder.ivFav.animate()
+                    .scaleX(1.1f)
+                    .scaleY(1.1f)
+                    .setDuration(200)
+                    .start();
+        } else {
+            holder.ivFav.setBackgroundResource(R.drawable.bg_fav_button_ripple);
+            holder.ivFav.setColorFilter(ContextCompat.getColor(ctx, android.R.color.white));
+            holder.ivFav.setScaleX(1.0f);
+            holder.ivFav.setScaleY(1.0f);
+        }
 
         if (restaurant.getImageUri() != null && !restaurant.getImageUri().isEmpty()) {
             String imageUri = restaurant.getImageUri();
