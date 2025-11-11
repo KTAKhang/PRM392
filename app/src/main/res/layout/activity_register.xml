@@ -35,7 +35,7 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:gravity="center"
-                    android:background="@drawable/bg_icon_circle"
+                    android:background="@drawable/bg_icon_circle_gradient"
                     android:layout_marginBottom="12dp">
 
                     <ImageView
@@ -102,10 +102,13 @@
                 android:text="Đăng ký"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:backgroundTint="#2563EB"
+                android:background="@drawable/bg_button_primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium" />
 
             <!-- Chuyển sang đăng nhập -->
             <TextView
@@ -120,11 +123,14 @@
                 android:id="@+id/btnGoToLogin"
                 android:text="Đăng nhập ngay"
                 android:textAllCaps="false"
-                android:backgroundTint="#3B82F6"
+                android:background="@drawable/bg_button_secondary"
                 android:textColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp" />
+                android:layout_marginTop="6dp"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

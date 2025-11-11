@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,8 @@ import com.example.prm392_finalproject.database.DatabaseHelper;
 import com.example.prm392_finalproject.model.Restaurant;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +32,14 @@ public class SearchActivity extends AppCompatActivity {
     private int userId;
     private RestaurantAdapter adapter;
     private RecyclerView rvRestaurants;
-    private TextView tvEmpty;
+    private LinearLayout tvEmpty;
     private SearchView searchView;
+    private ChipGroup chipGroup;
+    private Chip chipAll, chipName, chipAddress;
+    private TextView tvResultsCount;
+    
+    // Loại tìm kiếm: 0 = Tất cả, 1 = Theo tên, 2 = Theo địa chỉ
+    private int searchType = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,11 @@ public class SearchActivity extends AppCompatActivity {
         rvRestaurants = findViewById(R.id.rvRestaurants);
         tvEmpty = findViewById(R.id.tvEmpty);
         searchView = findViewById(R.id.searchView);
+        chipGroup = findViewById(R.id.chipGroup);
+        chipAll = findViewById(R.id.chipAll);
+        chipName = findViewById(R.id.chipName);
+        chipAddress = findViewById(R.id.chipAddress);
+        tvResultsCount = findViewById(R.id.tvResultsCount);
 
         topAppBar.setNavigationOnClickListener(v -> finish());
 
@@ -82,6 +96,26 @@ public class SearchActivity extends AppCompatActivity {
             return false;
         });
 
+        // Setup chip group listener
+        chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) {
+                return;
+            }
+            int checkedId = checkedIds.get(0);
+            if (checkedId == R.id.chipAll) {
+                searchType = 0;
+            } else if (checkedId == R.id.chipName) {
+                searchType = 1;
+            } else if (checkedId == R.id.chipAddress) {
+                searchType = 2;
+            }
+            // Thực hiện lại tìm kiếm với loại mới nếu đã có từ khóa
+            String currentQuery = searchView.getQuery().toString();
+            if (!TextUtils.isEmpty(currentQuery)) {
+                performSearch(currentQuery);
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -108,13 +142,42 @@ public class SearchActivity extends AppCompatActivity {
             resetState();
             return;
         }
-        List<Restaurant> results = db.searchRestaurantsByKeyword(userId, keyword);
+        
+        List<Restaurant> results;
+        String searchTypeText = "";
+        
+        // Chọn phương thức tìm kiếm dựa trên searchType
+        switch (searchType) {
+            case 1: // Theo tên
+                results = db.searchRestaurantsByName(userId, keyword);
+                searchTypeText = "theo tên";
+                break;
+            case 2: // Theo địa chỉ
+                results = db.searchRestaurantsByAddress(userId, keyword);
+                searchTypeText = "theo địa chỉ";
+                break;
+            default: // Tất cả (0) - tìm theo cả tên và địa chỉ
+                results = db.searchRestaurantsByNameAndAddress(userId, keyword);
+                searchTypeText = "tất cả";
+                break;
+        }
+        
         if (results == null || results.isEmpty()) {
-            showEmpty("Không tìm thấy quán ăn phù hợp");
+            String message = "Không tìm thấy quán ăn " + searchTypeText + " với từ khóa \"" + keyword + "\"";
+            showEmpty(message);
+            tvResultsCount.setVisibility(View.GONE);
         } else {
             adapter.updateData(results);
             rvRestaurants.setVisibility(View.VISIBLE);
             tvEmpty.setVisibility(View.GONE);
+            
+            // Hiển thị số lượng kết quả
+            String countText = "Tìm thấy " + results.size() + " quán ăn " + searchTypeText;
+            if (searchType == 0) {
+                countText = "Tìm thấy " + results.size() + " quán ăn";
+            }
+            tvResultsCount.setText(countText);
+            tvResultsCount.setVisibility(View.VISIBLE);
         }
     }
 
@@ -134,11 +197,18 @@ public class SearchActivity extends AppCompatActivity {
     private void resetState() {
         adapter.updateData(new ArrayList<>());
         showEmpty("Nhập từ khóa để bắt đầu tìm kiếm");
+        tvResultsCount.setVisibility(View.GONE);
     }
 
     private void showEmpty(String message) {
         adapter.updateData(new ArrayList<>());
-        tvEmpty.setText(message);
+        // Update text in the TextView of LinearLayout (second child)
+        if (tvEmpty.getChildCount() > 1) {
+            View child = tvEmpty.getChildAt(1);
+            if (child instanceof TextView) {
+                ((TextView) child).setText(message);
+            }
+        }
         tvEmpty.setVisibility(View.VISIBLE);
         rvRestaurants.setVisibility(View.GONE);
     }

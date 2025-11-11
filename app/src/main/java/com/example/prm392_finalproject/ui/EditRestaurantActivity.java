@@ -127,21 +127,35 @@ public class EditRestaurantActivity extends AppCompatActivity {
                 return;
             }
 
+            // Đảm bảo restaurant object có đầy đủ thông tin
+            if (restaurant == null) {
+                Toast.makeText(this, "Lỗi: Không tìm thấy quán ăn", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+
+            // Cập nhật thông tin từ form
             restaurant.setName(name);
             restaurant.setAddress(etAddress.getText().toString().trim());
             restaurant.setPhone(etPhone.getText().toString().trim());
             restaurant.setNotes(etNotes.getText().toString());
             restaurant.setFavorite(swFav.isChecked());
 
-            // Update image URI if a new image was selected
+            // Chỉ cập nhật image URI nếu người dùng chọn hình ảnh mới
+            // Nếu không, giữ nguyên hình ảnh cũ (đã có trong restaurant object)
             if (imageUri != null) {
                 restaurant.setImageUri(imageUri.toString());
             }
+            // Nếu imageUri == null, restaurant.getImageUri() vẫn giữ giá trị cũ từ database
 
             boolean ok = db.updateRestaurant(restaurant);
-            Toast.makeText(this, ok ? "Cập nhật thành công" : "Lỗi cập nhật", Toast.LENGTH_SHORT).show();
             if (ok) {
+                Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                // Quay lại màn hình chi tiết (RestaurantDetailActivity)
+                // onResume() của RestaurantDetailActivity sẽ tự động load lại dữ liệu mới
                 finish();
+            } else {
+                Toast.makeText(this, "Lỗi cập nhật", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -154,6 +168,10 @@ public class EditRestaurantActivity extends AppCompatActivity {
                         boolean ok = db.deleteRestaurant(restaurantId);
                         Toast.makeText(this, ok ? "Đã xóa" : "Lỗi xóa", Toast.LENGTH_SHORT).show();
                         if (ok) {
+                            // Khi xóa thành công, quay về HomeActivity vì sản phẩm đã không còn tồn tại
+                            Intent intent = new Intent(this, HomeActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
                             finish();
                         }
                     })

@@ -10,37 +10,56 @@
     android:paddingRight="20dp"
     android:paddingBottom="0dp">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
+    <!-- Header với gradient -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
-        app:title="Danh sách quán ăn"
-        app:titleCentered="true"
-        app:titleTextColor="@color/black"
-        app:navigationIconTint="@color/black"
-        app:menu="@menu/topbar_menu" />
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/tvGreeting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Khám phá những địa điểm ăn uống yêu thích"
-        android:textColor="#4B5563"
-        android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
 
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/topAppBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                app:title="Danh sách quán ăn"
+                app:titleCentered="true"
+                app:titleTextColor="@android:color/white"
+                app:navigationIconTint="@android:color/white"
+                app:menu="@menu/topbar_menu" />
+
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Khám phá những địa điểm ăn uống yêu thích"
+                android:textColor="#E0E7FF"
+                android:textSize="15sp"
+                android:letterSpacing="0.02" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Card chứa danh sách -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
         android:layout_weight="1"
         android:clipToPadding="false"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="8dp"
         app:cardUseCompatPadding="true">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -48,30 +67,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:padding="12dp"
-            android:scrollbars="vertical" />
-
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:overScrollMode="ifContentScrolls" />
     </androidx.cardview.widget.CardView>
 
+    <!-- Bottom Navigation -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="6dp">
+        app:cardCornerRadius="28dp"
+        app:cardElevation="10dp"
+        app:strokeWidth="0dp">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             app:itemIconTint="@color/nav_icon_selector"
             app:itemRippleColor="@color/purple_200"
             app:itemTextColor="@color/nav_text_selector"
             app:menu="@menu/bottom_nav_menu" />
-
     </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
-

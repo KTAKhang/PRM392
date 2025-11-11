@@ -153,11 +153,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(R_NAME, restaurant.getName());
+        // Luôn cập nhật các trường text (có thể là chuỗi rỗng nếu người dùng xóa)
         cv.put(R_ADDRESS, restaurant.getAddress());
         cv.put(R_PHONE, restaurant.getPhone());
         cv.put(R_NOTES, restaurant.getNotes());
         cv.put(R_FAVORITE, restaurant.isFavorite() ? 1 : 0);
-        cv.put(R_IMAGE, restaurant.getImageUri());
+        // Chỉ cập nhật image nếu có giá trị (không null và không rỗng)
+        // Logic này được xử lý ở EditRestaurantActivity: chỉ set imageUri nếu người dùng chọn ảnh mới
+        // Nếu imageUri là null, không cập nhật để giữ nguyên hình ảnh cũ trong database
+        if (restaurant.getImageUri() != null && !restaurant.getImageUri().isEmpty()) {
+            cv.put(R_IMAGE, restaurant.getImageUri());
+        }
+        // LƯU Ý QUAN TRỌNG: Không cập nhật R_USER_ID để đảm bảo userId không bị thay đổi hoặc mất
+        // userId được giữ nguyên từ dữ liệu hiện có trong database
         int rows = db.update(T_RESTAURANTS, cv, R_ID + "=?", new String[] { String.valueOf(restaurant.getId()) });
         return rows > 0;
     }
@@ -250,6 +258,85 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND (LOWER(" + R_NAME
                 + ") LIKE ? OR LOWER(" + R_ADDRESS + ") LIKE ? OR LOWER(" + R_NOTES + ") LIKE ?)",
                 new String[] { String.valueOf(userId), like, like, like });
+        while (c.moveToNext()) {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
+        }
+        c.close();
+        return list;
+    }
+
+    // Tìm kiếm theo tên
+    public List<Restaurant> searchRestaurantsByName(int userId, String keyword) {
+        List<Restaurant> list = new ArrayList<>();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return list;
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        String like = "%" + keyword.trim().toLowerCase() + "%";
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND LOWER(" + R_NAME
+                + ") LIKE ?", new String[] { String.valueOf(userId), like });
+        while (c.moveToNext()) {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
+        }
+        c.close();
+        return list;
+    }
+
+    // Tìm kiếm theo địa chỉ
+    public List<Restaurant> searchRestaurantsByAddress(int userId, String keyword) {
+        List<Restaurant> list = new ArrayList<>();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return list;
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        String like = "%" + keyword.trim().toLowerCase() + "%";
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND LOWER(" + R_ADDRESS
+                + ") LIKE ?", new String[] { String.valueOf(userId), like });
+        while (c.moveToNext()) {
+            Restaurant restaurant = new Restaurant();
+            restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
+            restaurant.setName(c.getString(c.getColumnIndexOrThrow(R_NAME)));
+            restaurant.setAddress(c.getString(c.getColumnIndexOrThrow(R_ADDRESS)));
+            restaurant.setPhone(c.getString(c.getColumnIndexOrThrow(R_PHONE)));
+            restaurant.setNotes(c.getString(c.getColumnIndexOrThrow(R_NOTES)));
+            restaurant.setFavorite(c.getInt(c.getColumnIndexOrThrow(R_FAVORITE)) == 1);
+            restaurant.setImageUri(c.getString(c.getColumnIndexOrThrow(R_IMAGE)));
+            restaurant.setUserId(c.getInt(c.getColumnIndexOrThrow(R_USER_ID)));
+            list.add(restaurant);
+        }
+        c.close();
+        return list;
+    }
+
+    // Tìm kiếm theo cả tên và địa chỉ
+    public List<Restaurant> searchRestaurantsByNameAndAddress(int userId, String keyword) {
+        List<Restaurant> list = new ArrayList<>();
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return list;
+        }
+        SQLiteDatabase db = getReadableDatabase();
+        String like = "%" + keyword.trim().toLowerCase() + "%";
+        Cursor c = db.rawQuery("SELECT * FROM " + T_RESTAURANTS + " WHERE " + R_USER_ID + "=? AND (LOWER(" + R_NAME
+                + ") LIKE ? OR LOWER(" + R_ADDRESS + ") LIKE ?)",
+                new String[] { String.valueOf(userId), like, like });
         while (c.moveToNext()) {
             Restaurant restaurant = new Restaurant();
             restaurant.setId(c.getInt(c.getColumnIndexOrThrow(R_ID)));
