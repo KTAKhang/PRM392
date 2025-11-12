@@ -98,7 +98,7 @@ public class EditRestaurantActivity extends AppCompatActivity {
             return;
         }
 
-        // Setup image picker (giống y hệt AddRestaurantActivity)
+        // Setup image picker
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
                 uri -> {
@@ -108,7 +108,6 @@ public class EditRestaurantActivity extends AppCompatActivity {
                             getContentResolver().takePersistableUriPermission(uri,
                                     Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         } catch (Exception ignored) {
-                            // Some content providers don't support persistent permissions
                         }
                         imgPreview.setImageURI(uri);
                     }
@@ -117,50 +116,16 @@ public class EditRestaurantActivity extends AppCompatActivity {
         // Load restaurant data
         loadRestaurant();
 
-        // Setup button listeners
+        // Button listeners
         btnPickImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         btnUpdate.setOnClickListener(v -> {
-            String name = etName.getText().toString().trim();
-            if (name.isEmpty()) {
-                Toast.makeText(this, "Nhập tên quán ăn", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Đảm bảo restaurant object có đầy đủ thông tin
-            if (restaurant == null) {
-                Toast.makeText(this, "Lỗi: Không tìm thấy quán ăn", Toast.LENGTH_SHORT).show();
-                finish();
-                return;
-            }
-
-            // Cập nhật thông tin từ form
-            restaurant.setName(name);
-            restaurant.setAddress(etAddress.getText().toString().trim());
-            restaurant.setPhone(etPhone.getText().toString().trim());
-            restaurant.setNotes(etNotes.getText().toString());
-            restaurant.setFavorite(swFav.isChecked());
-
-            // Chỉ cập nhật image URI nếu người dùng chọn hình ảnh mới
-            // Nếu không, giữ nguyên hình ảnh cũ (đã có trong restaurant object)
-            if (imageUri != null) {
-                restaurant.setImageUri(imageUri.toString());
-            }
-            // Nếu imageUri == null, restaurant.getImageUri() vẫn giữ giá trị cũ từ database
-
-            boolean ok = db.updateRestaurant(restaurant);
-            if (ok) {
-                Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                // Quay lại màn hình chi tiết (RestaurantDetailActivity)
-                // onResume() của RestaurantDetailActivity sẽ tự động load lại dữ liệu mới
-                finish();
-            } else {
-                Toast.makeText(this, "Lỗi cập nhật", Toast.LENGTH_SHORT).show();
+            if (validateForm()) {
+                updateRestaurant();
             }
         });
 
         btnDelete.setOnClickListener(v -> {
-            // Show confirmation dialog before deleting
             new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Xác nhận xóa")
                     .setMessage("Bạn có chắc chắn muốn xóa quán ăn này?")
@@ -168,7 +133,6 @@ public class EditRestaurantActivity extends AppCompatActivity {
                         boolean ok = db.deleteRestaurant(restaurantId);
                         Toast.makeText(this, ok ? "Đã xóa" : "Lỗi xóa", Toast.LENGTH_SHORT).show();
                         if (ok) {
-                            // Khi xóa thành công, quay về HomeActivity vì sản phẩm đã không còn tồn tại
                             Intent intent = new Intent(this, HomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
@@ -180,6 +144,7 @@ public class EditRestaurantActivity extends AppCompatActivity {
         });
     }
 
+    /** Load data from DB */
     private void loadRestaurant() {
         restaurant = db.getRestaurantById(restaurantId);
         if (restaurant == null) {
@@ -188,23 +153,107 @@ public class EditRestaurantActivity extends AppCompatActivity {
             return;
         }
 
-        // Fill form with restaurant data
         etName.setText(restaurant.getName());
         etAddress.setText(restaurant.getAddress());
         etPhone.setText(restaurant.getPhone());
         etNotes.setText(restaurant.getNotes());
         swFav.setChecked(restaurant.isFavorite());
 
-        // Load existing image if available
         if (restaurant.getImageUri() != null && !restaurant.getImageUri().isEmpty()) {
             try {
                 Uri uri = Uri.parse(restaurant.getImageUri());
                 imgPreview.setImageURI(uri);
-                imageUri = uri; // Keep reference to current image
+                imageUri = uri;
             } catch (Exception e) {
-                // If image loading fails, keep default image
                 e.printStackTrace();
             }
+        }
+    }
+
+    /** Validation form giống AddRestaurantActivity */
+    private boolean validateForm() {
+        boolean isValid = true;
+
+        etName.setError(null);
+        etAddress.setError(null);
+        etPhone.setError(null);
+
+        String name = etName.getText().toString().trim();
+        String address = etAddress.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
+        String notes = etNotes.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            etName.setError("Vui lòng nhập tên quán ăn");
+            etName.requestFocus();
+            isValid = false;
+        } else if (name.length() < 3) {
+            etName.setError("Tên quán ăn phải có ít nhất 3 ký tự");
+            isValid = false;
+        } else if (name.length() > 100) {
+            etName.setError("Tên quán ăn không được quá 100 ký tự");
+            isValid = false;
+        }
+
+        if (address.isEmpty()) {
+            etAddress.setError("Vui lòng nhập địa chỉ");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        } else if (address.length() < 5) {
+            etAddress.setError("Địa chỉ phải có ít nhất 5 ký tự");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        } else if (address.length() > 200) {
+            etAddress.setError("Địa chỉ không được quá 200 ký tự");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        }
+
+        if (!phone.isEmpty()) {
+            if (!phone.matches("\\d+")) {
+                etPhone.setError("Số điện thoại chỉ được nhập số");
+                if (isValid) etPhone.requestFocus();
+                isValid = false;
+            } else if (phone.length() < 8 || phone.length() > 15) {
+                etPhone.setError("Số điện thoại phải có từ 8-15 số");
+                if (isValid) etPhone.requestFocus();
+                isValid = false;
+            }
+        }
+
+        if (notes.length() > 500) {
+            etNotes.setError("Ghi chú không được quá 500 ký tự");
+            if (isValid) etNotes.requestFocus();
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    /** Update restaurant */
+    private void updateRestaurant() {
+        restaurant.setName(etName.getText().toString().trim());
+        restaurant.setAddress(etAddress.getText().toString().trim());
+        restaurant.setPhone(etPhone.getText().toString().trim());
+        restaurant.setNotes(etNotes.getText().toString().trim());
+        restaurant.setFavorite(swFav.isChecked());
+
+        if (imageUri != null) {
+            restaurant.setImageUri(imageUri.toString());
+        }
+
+        boolean ok = db.updateRestaurant(restaurant);
+        if (ok) {
+            Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+
+            // ✅ Sau khi cập nhật, quay về màn hình chính
+            Intent intent = new Intent(this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+
+        } else {
+            Toast.makeText(this, "Lỗi cập nhật", Toast.LENGTH_SHORT).show();
         }
     }
 }
