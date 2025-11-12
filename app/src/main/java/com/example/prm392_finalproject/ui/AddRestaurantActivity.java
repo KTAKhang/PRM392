@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -110,28 +111,100 @@ public class AddRestaurantActivity extends AppCompatActivity {
         btnPickImage.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
 
         btnSave.setOnClickListener(v -> {
-            String name = etName.getText().toString().trim();
-            if (name.isEmpty()) {
-                Toast.makeText(this, "Nhập tên quán ăn", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Restaurant restaurant = new Restaurant();
-            restaurant.setName(name);
-            restaurant.setAddress(etAddress.getText().toString().trim());
-            restaurant.setPhone(etPhone.getText().toString().trim());
-            restaurant.setNotes(etNotes.getText().toString());
-            restaurant.setFavorite(swFav.isChecked());
-            restaurant.setUserId(userId);
-            restaurant.setImageUri(imageUri != null ? imageUri.toString() : null);
-
-            long id = db.insertRestaurant(restaurant);
-            if (id != -1) {
-                Toast.makeText(this, "Thêm quán ăn thành công", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this, "Lỗi khi thêm quán ăn", Toast.LENGTH_SHORT).show();
+            if (validateForm()) {
+                saveRestaurant();
             }
         });
+    }
+
+    /**
+     * Validate toàn bộ form trước khi lưu
+     */
+    private boolean validateForm() {
+        boolean isValid = true;
+
+        // Reset errors
+        etName.setError(null);
+        etAddress.setError(null);
+        etPhone.setError(null);
+
+        // Validate tên quán ăn (bắt buộc)
+        String name = etName.getText().toString().trim();
+        if (name.isEmpty()) {
+            etName.setError("Vui lòng nhập tên quán ăn");
+            etName.requestFocus();
+            isValid = false;
+        } else if (name.length() < 3) {
+            etName.setError("Tên quán ăn phải có ít nhất 3 ký tự");
+            etName.requestFocus();
+            isValid = false;
+        } else if (name.length() > 100) {
+            etName.setError("Tên quán ăn không được quá 100 ký tự");
+            etName.requestFocus();
+            isValid = false;
+        }
+
+        // Validate địa chỉ (bắt buộc)
+        String address = etAddress.getText().toString().trim();
+        if (address.isEmpty()) {
+            etAddress.setError("Vui lòng nhập địa chỉ");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        } else if (address.length() < 5) {
+            etAddress.setError("Địa chỉ phải có ít nhất 5 ký tự");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        } else if (address.length() > 200) {
+            etAddress.setError("Địa chỉ không được quá 200 ký tự");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        }
+
+        // Validate số điện thoại (tùy chọn, nhưng nếu có thì phải là số)
+        String phone = etPhone.getText().toString().trim();
+        if (!phone.isEmpty()) {
+            // Kiểm tra chỉ chứa số
+            if (!phone.matches("\\d+")) {
+                etPhone.setError("Số điện thoại chỉ được nhập số");
+                if (isValid) etPhone.requestFocus();
+                isValid = false;
+            } else if (phone.length() < 8 || phone.length() > 15) {
+                etPhone.setError("Số điện thoại phải có từ 8-15 số");
+                if (isValid) etPhone.requestFocus();
+                isValid = false;
+            }
+        }
+
+        // Validate ghi chú (tùy chọn, nhưng giới hạn độ dài)
+        String notes = etNotes.getText().toString().trim();
+        if (notes.length() > 500) {
+            etNotes.setError("Ghi chú không được quá 500 ký tự");
+            if (isValid) etNotes.requestFocus();
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Lưu thông tin nhà hàng vào database
+     */
+    private void saveRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(etName.getText().toString().trim());
+        restaurant.setAddress(etAddress.getText().toString().trim());
+        restaurant.setPhone(etPhone.getText().toString().trim());
+        restaurant.setNotes(etNotes.getText().toString().trim());
+        restaurant.setFavorite(swFav.isChecked());
+        restaurant.setUserId(userId);
+        restaurant.setImageUri(imageUri != null ? imageUri.toString() : null);
+
+        long id = db.insertRestaurant(restaurant);
+        if (id != -1) {
+            Toast.makeText(this, "Thêm quán ăn thành công", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, "Lỗi khi thêm quán ăn", Toast.LENGTH_SHORT).show();
+        }
     }
 }
