@@ -119,68 +119,107 @@ public class AddRestaurantActivity extends AppCompatActivity {
 
     /**
      * Validate toàn bộ form trước khi lưu
+     * Tất cả các trường đều BẮT BUỘC ngoại trừ Ghi chú
      */
     private boolean validateForm() {
         boolean isValid = true;
 
-        // Reset errors
+        // Reset tất cả lỗi cũ
         etName.setError(null);
         etAddress.setError(null);
         etPhone.setError(null);
+        etNotes.setError(null);
 
-        // Validate tên quán ăn (bắt buộc)
-        String name = etName.getText().toString().trim();
-        if (name.isEmpty()) {
+        // ======= 1️⃣ VALIDATE TÊN QUÁN ĂN =======
+        String name = etName.getText().toString();
+        if (name.trim().isEmpty()) {
             etName.setError("Vui lòng nhập tên quán ăn");
-            etName.requestFocus();
+            if (isValid) etName.requestFocus();
             isValid = false;
-        } else if (name.length() < 3) {
+        }
+        // Chỉ cho chữ, số, khoảng trắng, dấu "(" ")" "-"
+        else if (!name.matches("^[\\p{L}\\p{N}()\\-\\s]+$")) {
+            etName.setError("Tên quán chỉ được chứa chữ, số, khoảng trắng, (), hoặc -");
+            if (isValid) etName.requestFocus();
+            isValid = false;
+        }
+        else if (!name.matches(".*[\\p{L}\\p{N}].*")) {
+            etName.setError("Tên quán phải chứa ít nhất một chữ hoặc số");
+            if (isValid) etName.requestFocus();
+            isValid = false;
+        }
+        else if (name.length() < 3) {
             etName.setError("Tên quán ăn phải có ít nhất 3 ký tự");
-            etName.requestFocus();
+            if (isValid) etName.requestFocus();
             isValid = false;
-        } else if (name.length() > 100) {
+        }
+        else if (name.length() > 100) {
             etName.setError("Tên quán ăn không được quá 100 ký tự");
-            etName.requestFocus();
+            if (isValid) etName.requestFocus();
             isValid = false;
         }
 
-        // Validate địa chỉ (bắt buộc)
-        String address = etAddress.getText().toString().trim();
-        if (address.isEmpty()) {
+        // ======= 2️⃣ VALIDATE ĐỊA CHỈ =======
+        String address = etAddress.getText().toString();
+        if (address.trim().isEmpty()) {
             etAddress.setError("Vui lòng nhập địa chỉ");
             if (isValid) etAddress.requestFocus();
             isValid = false;
-        } else if (address.length() < 5) {
+        }
+        // Cho phép chữ, số, khoảng trắng, , . / - ()
+        else if (!address.matches("^[\\p{L}\\p{N}\\s,./()\\-]+$")) {
+            etAddress.setError("Địa chỉ chỉ được chứa chữ, số và ký tự , . / - ()");
+            if (isValid) etAddress.requestFocus();
+            isValid = false;
+        }
+        else if (address.length() < 5) {
             etAddress.setError("Địa chỉ phải có ít nhất 5 ký tự");
             if (isValid) etAddress.requestFocus();
             isValid = false;
-        } else if (address.length() > 200) {
+        }
+        else if (address.length() > 200) {
             etAddress.setError("Địa chỉ không được quá 200 ký tự");
             if (isValid) etAddress.requestFocus();
             isValid = false;
         }
 
-        // Validate số điện thoại (tùy chọn, nhưng nếu có thì phải là số)
+        // ======= 3️⃣ VALIDATE SỐ ĐIỆN THOẠI =======
         String phone = etPhone.getText().toString().trim();
-        if (!phone.isEmpty()) {
-            // Kiểm tra chỉ chứa số
-            if (!phone.matches("\\d+")) {
-                etPhone.setError("Số điện thoại chỉ được nhập số");
-                if (isValid) etPhone.requestFocus();
-                isValid = false;
-            } else if (phone.length() < 8 || phone.length() > 15) {
-                etPhone.setError("Số điện thoại phải có từ 8-15 số");
-                if (isValid) etPhone.requestFocus();
-                isValid = false;
-            }
+        if (phone.isEmpty()) {
+            etPhone.setError("Vui lòng nhập số điện thoại");
+            if (isValid) etPhone.requestFocus();
+            isValid = false;
+        }
+        // Chỉ nhận số, có độ dài 10 hoặc 11, bắt đầu bằng 0
+        else if (!phone.matches("^0\\d{9,10}$")) {
+        /*
+         Giải thích:
+         ^0         → bắt đầu bằng số 0
+         \\d{9,10}  → theo sau là 9 hoặc 10 chữ số nữa (tổng là 10 hoặc 11)
+         $          → kết thúc ở đó
+        */
+            etPhone.setError("Số điện thoại phải có 10 hoặc 11 chữ số và bắt đầu bằng số 0");
+            if (isValid) etPhone.requestFocus();
+            isValid = false;
         }
 
-        // Validate ghi chú (tùy chọn, nhưng giới hạn độ dài)
-        String notes = etNotes.getText().toString().trim();
-        if (notes.length() > 500) {
+        // ======= 4️⃣ VALIDATE HÌNH ẢNH =======
+        if (imageUri == null) {
+            Toast.makeText(this, "Vui lòng chọn hình ảnh cho quán ăn", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        // ======= 5️⃣ VALIDATE GHI CHÚ =======
+        String notes = etNotes.getText().toString();
+        if (notes.trim().length() > 500) {
             etNotes.setError("Ghi chú không được quá 500 ký tự");
             if (isValid) etNotes.requestFocus();
             isValid = false;
+        }
+
+        // ======= 6️⃣ THÔNG BÁO CHUNG =======
+        if (!isValid) {
+            Toast.makeText(this, "Vui lòng kiểm tra lại thông tin đã nhập", Toast.LENGTH_SHORT).show();
         }
 
         return isValid;

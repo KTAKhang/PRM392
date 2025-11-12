@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Image Preview Card - Compact -->
+                <!-- Image Preview Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Form Fields - Compact spacing -->
+                <!-- Form Fields -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -116,7 +116,8 @@
                     android:padding="12dp"
                     android:background="@drawable/bg_input"
                     android:textSize="14sp"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:inputType="textCapSentences|textMultiLine|textNoSuggestions" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -135,7 +136,8 @@
                     android:padding="12dp"
                     android:background="@drawable/bg_input"
                     android:textSize="14sp"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:inputType="textCapSentences|textMultiLine|textNoSuggestions" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -177,9 +179,10 @@
                     android:padding="12dp"
                     android:background="@drawable/bg_input"
                     android:textSize="14sp"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:inputType="textCapSentences|textMultiLine|textNoSuggestions" />
 
-                <!-- Favorite Switch - Compact -->
+                <!-- Yêu thích -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
